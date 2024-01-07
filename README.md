@@ -1,1 +1,43 @@
-extract the time of the listing and the day of the week for list to see if that is of any help.
+## Problem statement
+In this project we will be using Natural Language Processing (NLP) to classify different reddit listings into the subreddit (or read it as categories) they do belong to. Reddit is a network of communities where people can dive into their interests, hobbies and passions There's a community for whatever you're interested in where you can interact with people and get their opinion, or simply get your questions answered (source: reddit.com). To be able to interpret human language by machines, we need to put the language into a machine understandable format. NLP helps us do that. NLP helps computers communicate with humans in their own language and scales other language-related tasks. For example, NLP makes it possible for computers to read text, hear speech, interpret it, measure sentiment and determine which parts are important (source: sas.com). 
+
+As easy as it sounds, the whole process of reading and interpreting the human language is not that straight forward. As part of the current project, we will try to use various tools like transformers and estimators to input text into models and interpret that so that we can answer the questions of 'whether it is possible to predict what subreddit a listing belongs to' and if 'our predictive model provides reliable forecasts?'. The term reliable here means what percentage of the predictions are correct when the model is used for unseen data (more on this later). This usually poses challenges as human language has complexities that would not be easy to capture with simple models. The problem is expressed in the context reading different postings related to different subjects in reddit and categorizing them based on some previously seen examples. The problem becomes specifically challenging when the classes were are trying to categorize are intrinsically related to each other (subjects that are not totally independent or irrelevant). 
+
+Why is it important? Being able to classify a listing/post could help companies make informed decisions. For example, these methods could help us understand what the user is looking for and then we can provide more useful suggestions or a related user experience so that the user will get their needs met based on the type of request or interaction they have with the platform. The other applications of the current work includes, but is not limited to, spam classification, virtual assistants, translation and summarization, and urgency detection. 
+
+Who benefits from this project? The primary beneficiaries of this work are companies who provide services to customers. Knowing what the customer is looking for would help the companies address customer needs and tailor solutions based on different requirements. 
+
+## Data collection
+To gather the data necessary for this project, we have used reddit API's and started collecting data one a daily basis. Information like the title and body text of listings, the time is it posted, presence of media, and url were recorded in .csv files for further processes. This data was then used to classify listings from two different subreddits. The two subreddits of interest are r/offmychest and r/relationship_advice. Both subreddits have a relatively high number of listings per day so this will give us enough information to investigate on. offmychest subreddit mostly contains listings about personal issues, emotional hardships, life problems, and also issues in peoples relationships. The subreddit usually does have a sad tone because people use it as a way to express their feelings, unburden some thoughts, or to confess about things. relationship_advice subreddit focuses more on relationships and the ups and downs in it. The reasons these two subreddits were used for our investigation is that while these two subreddits represent two topics that could be distinguishable from each other, they do have common points that could make the classification process challenging. Although offmychest includes a wide variety of subjects, it often includes topics which are related to relationship and the problems around it as well. This overlap can cause our model to struggle since we are mainly relying on the words that used in each listing and having a similar context in both subreddits results in the use of similar vocabularies. 
+
+## Methodology and modeling
+During the EDA part, we investigated the information and tried to use different feature engineering approaches to come up with features that would help us more during the classification process. The text data were converted into features using `CountVectorizer` and `TfidfVectorizer` libraries and then, different classifiers like KNN, Logistic Regression, MN Naive Bayes, and Random Forest were used to determine which model performs better.
+
+Performance evaluation for our models was determined mostly based on the accuracy score. Accuracy score does not investigate details of how models perform on each of the negative and positive classes but seemed to be the proper metrics for our purpose as the data we have were quite balanced and also there was not a particular emphasis on any of the classes (negative or positive). In some special cases, we tried to generate extremely imbalanced data and evaluate/optimize our model on it. For such cases, recall, precision, and f1 score were used in addition to the accuracy score.  
+
+## Conclusions
+In this project, we used the reddit API's to scape more than 15,000 listings on different subreddits (r/offmychest and r/relationship_advice) and analyze their information. The primary goal of this work is to see whether we can use NLP to classify different listings in reddit based on the subreddit they belong to. To achieve this goal we have employed multiple estimators (KNN, Logistic Regression, Naive Bayes, and Random Forest) along with different transformers (CountVectorizer and TfidfVectorizer). Here are a few important findings:
+- EDA has revealed that there are groups of popular words that are unique to each of these subreddits and could be used as indicators for our classification problems. 
+- In addition to the text in each listing, we have discovered different pattern in the data (e.g. sentiment analysis and length of the listing) that could be used to gain more information for our classification problem. 
+- Among all the estimators and transformers, we have found that CountVectorizer with Logistic regression generates us the best results.
+
+<center>
+
+| Estimator | Score |
+| -------- | ------- |
+| Logistic Regression  | 0.88   |
+| Multinomial Naive Bayes| 0.85    |
+| KNN | 0.76     |
+</center>
+
+- A general trend that was observed in all of the classifiers was the fact that our models were all having a relatively high variance. Increasing the number of words we used for our classification usually improved the training score without that much of help with the test data (overfitting). 
+- Since neither of the subreddits we were investigating was more important than the other one, we used the accuracy score (tn + tp)/total observations in most of our evaluations. 
+- The original data were were using was quite balance but to see how the production model performs on imbalanced data, we created some severely imbalanced (while the positive class was of more importance for us). The base model was not particularly the best model for the imbalance data so what we did was to increase the weight of the underrepresented class in our model and use metrics like precision, recall, and f1-score instead so that we tune the model for the specific purpose of interest, and the class of interest. Using this approach, we were able to improve model's performance for underrepresented classes. <br>
+These findings are important in a sense that these results could be used to classify subreddit listings with an accuracy of 88%. In addition to that, we have suggested some extra steps that help with imbalance data and how we can modify the modeling process to get the best metrics (depending on whether outcomes like false positive or false negative are important for us) based on the scope and purpose of the research. 
+
+## Future work and recommendations
+
+Here are a few areas identified as where we could further work and improve upon:
+- Automate data scraping by using timed scripts.
+- Use features other than just the text of the listing. Information like location, time, etc might help us improve performance of our classifier. This might require collecting data consistently, over a longer period of time. 
+- The current transformers do not consider the relation between the words and the context in which the words are used. Instead, using more advanced language models to capture the meaning and relation between the words and having more targeted data preparation could help us get better results. 
